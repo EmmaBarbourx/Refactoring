@@ -48,6 +48,8 @@ import javax.swing.UIManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import src.ValidationUtils;
+
 
 import net.miginfocom.swing.MigLayout;
 
@@ -705,59 +707,61 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 
 	// check for input in text fields
 	private boolean checkInput() {
-		boolean valid = true;
-		// if any of inputs are in wrong format, colour text field and display
-		// message
-		if (ppsField.isEditable() && ppsField.getText().trim().isEmpty()) {
-			ppsField.setBackground(new Color(255, 150, 150));
-			valid = false;
-		} // end if
-		if (ppsField.isEditable() && correctPps(ppsField.getText().trim(), currentByteStart)) {
-			ppsField.setBackground(new Color(255, 150, 150));
-			valid = false;
-		} // end if
-		if (surnameField.isEditable() && surnameField.getText().trim().isEmpty()) {
-			surnameField.setBackground(new Color(255, 150, 150));
-			valid = false;
-		} // end if
-		if (firstNameField.isEditable() && firstNameField.getText().trim().isEmpty()) {
-			firstNameField.setBackground(new Color(255, 150, 150));
-			valid = false;
-		} // end if
-		if (genderCombo.getSelectedIndex() == 0 && genderCombo.isEnabled()) {
-			genderCombo.setBackground(new Color(255, 150, 150));
-			valid = false;
-		} // end if
-		if (departmentCombo.getSelectedIndex() == 0 && departmentCombo.isEnabled()) {
-			departmentCombo.setBackground(new Color(255, 150, 150));
-			valid = false;
-		} // end if
-		try {// try to get values from text field
-			Double.parseDouble(salaryField.getText());
-			// check if salary is greater than 0
-			if (Double.parseDouble(salaryField.getText()) < 0) {
-				salaryField.setBackground(new Color(255, 150, 150));
-				valid = false;
-			} // end if
-		} // end try
-		catch (NumberFormatException num) {
-			if (salaryField.isEditable()) {
-				salaryField.setBackground(new Color(255, 150, 150));
-				valid = false;
-			} // end if
-		} // end catch
-		if (fullTimeCombo.getSelectedIndex() == 0 && fullTimeCombo.isEnabled()) {
-			fullTimeCombo.setBackground(new Color(255, 150, 150));
-			valid = false;
-		} // end if
-			// display message if any input or format is wrong
-		if (!valid)
-			JOptionPane.showMessageDialog(null, "Wrong values or format! Please check!");
-		// set text field to white colour if text fields are editable
-		if (ppsField.isEditable())
-			setToWhite();
-
-		return valid;
+	    boolean valid = true;
+	    
+	    if (ppsField.isEditable()) {
+	        valid &= ValidationUtils.validateTextField(ppsField, text -> !text.isEmpty());
+	        // Custom PPS check
+	        if (correctPps(ppsField.getText().trim(), currentByteStart)) {
+	            ppsField.setBackground(ValidationUtils.ERROR_COLOR);
+	            valid = false;
+	        }
+	    }
+	    
+	    if (surnameField.isEditable()) {
+	        valid &= ValidationUtils.validateTextField(surnameField, text -> !text.isEmpty());
+	    }
+	    
+	    if (firstNameField.isEditable()) {
+	        valid &= ValidationUtils.validateTextField(firstNameField, text -> !text.isEmpty());
+	    }
+	    
+	    if (genderCombo.isEnabled()) {
+	        valid &= ValidationUtils.validateComboBox(genderCombo, 0);
+	    }
+	    
+	    if (departmentCombo.isEnabled()) {
+	        valid &= ValidationUtils.validateComboBox(departmentCombo, 0);
+	    }
+	    
+	    try {
+	        double salary = Double.parseDouble(salaryField.getText().trim());
+	        if (salary < 0) {
+	            salaryField.setBackground(ValidationUtils.ERROR_COLOR);
+	            valid = false;
+	        } else {
+	            salaryField.setBackground(ValidationUtils.DEFAULT_COLOR);
+	        }
+	    } catch (NumberFormatException ex) {
+	        if (salaryField.isEditable()) {
+	            salaryField.setBackground(ValidationUtils.ERROR_COLOR);
+	            valid = false;
+	        }
+	    }
+	    
+	    if (fullTimeCombo.isEnabled()) {
+	        valid &= ValidationUtils.validateComboBox(fullTimeCombo, 0);
+	    }
+	    
+	    if (!valid) {
+	        JOptionPane.showMessageDialog(null, "Wrong values or format! Please check!");
+	    }
+	    
+	    if (ppsField.isEditable()) {
+	        setToWhite();
+	    }
+	    
+	    return valid;
 	}
 
 	// set text field background colour to white
