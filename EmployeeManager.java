@@ -31,46 +31,6 @@ public class EmployeeManager {
         randomFile.closeWriteFile();
     }
     
-    // Record Navigation Methods
-    public Employee getFirstEmployee() {
-        openFileForRead();
-        long byteStart = randomFile.getFirst();
-        Employee emp = randomFile.readRecords(byteStart);
-        closeReadFile();
-        return emp;
-    }
-    
-    public Employee getNextEmployee(long currentByteStart) {
-        openFileForRead();
-        long nextByte = randomFile.getNext(currentByteStart);
-        Employee emp = randomFile.readRecords(nextByte);
-        closeReadFile();
-        return emp;
-    }
-    
-    public Employee getPreviousEmployee(long currentByteStart) {
-        openFileForRead();
-        long prevByte = randomFile.getPrevious(currentByteStart);
-        Employee emp = randomFile.readRecords(prevByte);
-        closeReadFile();
-        return emp;
-    }
-    
-    public Employee getLastEmployee() {
-        openFileForRead();
-        long lastByte = randomFile.getLast();
-        Employee emp = randomFile.readRecords(lastByte);
-        closeReadFile();
-        return emp;
-    }
-    
-    public int getNextFreeId() {
-        if (file.length() == 0 || !isSomeoneToDisplay())
-            return 1;
-        Employee last = getLastEmployee();
-        return last.getEmployeeId() + 1;
-    }
-    
     // Record Manipulation Methods
     public void addEmployee(Employee newEmployee) {
         openFileForWrite();
