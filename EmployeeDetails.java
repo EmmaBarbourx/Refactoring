@@ -738,10 +738,12 @@ public class EmployeeDetails extends JFrame implements ActionListener, ItemListe
 			if (file.getName().equals(generatedFileName))
 				file.delete();// delete file
 			file = newFile;// assign opened file to file
-			employeeManager = new EmployeeManager(file);
-            currentEmployee = employeeManager.getFirstEmployee();
-            displayRecords(currentEmployee);
-        }
+			// open file for reading
+			application.openReadFile(file.getAbsolutePath());
+			firstRecord();// look for first record
+			displayRecords(currentEmployee);
+			application.closeReadFile();// close file for reading
+		} // end if
 	}// end openFile
 
 	// save file
